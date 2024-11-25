@@ -1,4 +1,4 @@
-//Api Error handler:
+//Custom Api Error handler:
 
 class ApiError extends Error { 
   constructor(
