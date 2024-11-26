@@ -2,7 +2,10 @@ import dotenv from "dotenv";
 import { app } from "./app.js";
 import connectDB from "./db/index.js";
 
-dotenv.config()
+dotenv.config({
+  path: "./.env"
+
+})
 const PORT = process.env.PORT || 7000;
 
 connectDB()
@@ -15,33 +18,6 @@ connectDB()
   console.error("Mongodb connection failed:", err);
   process.exit(1);
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
