@@ -19,13 +19,14 @@ import fs from "fs"; //file system manager
                 resource_type: "auto"
             })
             //file hase been uploaded sucessfully
-            console.log("file is uploaded on cloudinary ", response.url );
+            // console.log("file is uploaded on cloudinary ", response.url );
+            fs.unlinkSync(localFilePath)
             return response;
 
         } catch (error) {
-            fs.unlink(localFilePath) //remove saved temporary file from local server as the upload operation got failed
+            fs.unlinkSync(localFilePath) //remove saved temporary file from local server as the upload operation got failed
             return null;
         }
     }
 
-    export {uploadOnCloudinary}
+    export {uploadOnCloudinary};
