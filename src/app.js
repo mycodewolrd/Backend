@@ -25,7 +25,7 @@ app.use(cookieParser()) //Parses cookies from incoming requests and makes them a
 import userRouter from "./routes/user.routes.js";
 
 
-//routes declaretion
+//routes declaration
 app.use("/api/v1/users", userRouter) //its gives you the access of user.router.js file
 // http://localhost:8000/api/v1/users/register
 
