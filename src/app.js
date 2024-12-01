@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-
+import userRouter from "./routes/user.routes.js";
 
 const app = express();
+
 
 //Middleware: who should be talk to data Base
 app.use(
@@ -21,8 +22,6 @@ app.use(cookieParser()) //Parses cookies from incoming requests and makes them a
 
 
 
-//routes import
-import userRouter from "./routes/user.routes.js";
 
 
 //routes declaration

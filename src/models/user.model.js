@@ -25,13 +25,12 @@ const userSchema = new mongoose.Schema(
             trim: true,
             index: true
         },
-        avatar: {
-            type: String, //cloudinary url
-            required: true
-        },
-        coverImage: {
-            type: String, //cloudinary url
-        },
+        // avatar: {
+        //     type: String, //cloudinary url
+        // },
+        // coverImage: {
+        //     type: String, //cloudinary url
+        // },
         watchHistory: [
             {
                 type: Schema.Types.ObjectId,
@@ -42,7 +41,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             require: [true, "Password is required"]
         },
-        refershtoken: {
+        refreshToken: {
             type: String
         }
     }, 
@@ -56,7 +55,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password"))
         return next();
-    this.password = await bcrypt.hash(this.password, 10)
+    this.password = bcrypt.hash(this.password, 10)
     next()
 
     //or option 2:
@@ -103,4 +102,4 @@ userSchema.methods.generateRefreshToken = function () {
 };
 
 
-export const User = mongoose.model("User", userSchema)
+export const User = mongoose.model("User", userSchema);

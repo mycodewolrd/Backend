@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "a mega backend project",
+  "description": "YouTube a mega backend project",
   "type": "module",
   "main": "index.js",
   "scripts": {
