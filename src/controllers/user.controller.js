@@ -51,6 +51,7 @@ const registerUser = asyncHandler( async (req, res) => {
 
 
     //Option 2: check condition with Some Method
+
     // get User details from frontend
     const {fullName, email, userName, password } = req.body
     //console.log("email: ", email);
@@ -169,13 +170,19 @@ const registerUser = asyncHandler( async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => { 
 
     // 1) taking DATA from req body
-    const {email, userName, password} = req.body
+    const {email, userName /*, password*/} = req.body
+    console.log(email);
+    
 
 
     // 2) userName & email base LogIn access
-    if (!userName || !email) {
+    if (!userName && !email) {
       throw new ApiError(400, "userName or email is required")
     }
+    // Here is an alternative of above code based:
+    // if (!(username || email)) {
+    //     throw new ApiError(400, "username or email is required")
+    // }
 
 
     // 3) find the User
@@ -194,17 +201,15 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
     // 4) password check
-    const isPasswordValid = await user.isPasswordCorrect(password)
+    const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
       throw new ApiError(401, "Invalid password");
     }
-    console.log("password checked and valid");
-    
 
 
     // 5) access and refresh token
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
     console.log("Have access of Tokens");
 
 
