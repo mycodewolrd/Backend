@@ -1,11 +1,9 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs"
 import dotenv from "dotenv";
-
-// Configure env
-dotenv.config();
-
+import fs from "fs";
 // Configure cloudinary
+
+dotenv.config();
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -13,30 +11,39 @@ cloudinary.config({
 });
 
 const uploadOnCloudinary = async (localFilePath) => {
-    try {
-        // console.log("Cloudinary Config: ", {
-        //   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        //   api_key: process.env.CLOUDINARY_API_KEY,
-        //   api_secret: process.env.CLOUDINARY_API_SECRET,
-        // });
+  try {
+    console.log("Cloudinary Config: ", {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
 
-        if (!localFilePath) return null;
+    if (!localFilePath) return null;
 
-        //upload the file on cloudinary
-        const response = cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
-        });
-        // file has been uploaded successful
-        console.log("file is uploaded on cloudinary ", response.url);
-        fs.unlinkSync(localFilePath)
-        return response;
+    const response = await cloudinary.uploader.upload(localFilePath, {
+      resource_type: "auto",
+    });
+    console.log(`File uploaded on Cloudinary , File src : ${response.url}`);
+    // once the file is uploaded , we would like to delete from the server
+    fs.unlinkSync(localFilePath);
+    return response;
+  } catch (error) {
+    console.error("Error On Cloudinary", error);
 
-    } catch (error) {
-        fs.unlinkSync(localFilePath) // remove the locally saved temporary file as the upload operation got failed
-        return null;
-    }
+    fs.unlinkSync(localFilePath);
+    return null;
+  }
 };
 
+const deleteFormCloudinary = async (PublicId) => {
+  try {
+    const result = cloudinary.uploader.destroy(PublicId);
+    console.log("Deleted From cloudinary,Public ID", result, PublicId);
+    return result;
+  } catch (error) {
+    console.warn("Error Deleting From Cloudinary", error);
+    return null;
+  }
+};
 
-
-export {uploadOnCloudinary};
+export { uploadOnCloudinary };
