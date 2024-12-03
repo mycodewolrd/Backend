@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 const userSchema = new mongoose.Schema(
   {
     userName: {
@@ -26,10 +27,10 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
     avatar: {
-        type: String, //cloudinary url
+      type: String, //cloudinary url
     },
     coverImage: {
-        type: String, //cloudinary url
+      type: String, //cloudinary url
     },
     watchHistory: [
       {
@@ -50,21 +51,36 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// encrypt password by bcrypt through pre hook
+// Encrypt password by bcrypt before saving
+// userSchema.pre("save", async function (next) {
+//   // if (!this.isModified("password")) return next();
+//   // this.password = bcrypt.hash(this.password, 10);
+//   // console.log("Hashed Password:", this.password); // Log hashed password
+//   // next();
+//   if (this.isModified("password")) {
+//       this.password = bcrypt.hash(this.password, 10);
+//       next();
+//   }
+// });
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
-  next();
 
-  //or option 2:
-  // if (this.isModified("password")) {
-  //     this.password = bcrypt.hash(this.password, 10);
-  //     next();
-  // }
+  this.password = bcrypt.hash(this.password, 10);
+  console.log("Hashed Password: ", this.password); // Add logging here
+  next();
 });
+
+//or option 2:
+// if (this.isModified("password")) {
+//     this.password = bcrypt.hash(this.password, 10);
+//     next();
+// }
 
 //compare encrypted password with user's given password
 userSchema.methods.isPasswordCorrect = async function (password) {
+  console.log("Comparing Password:", password);
+  console.log("Stored Hashed Password:", this.password);
   return await bcrypt.compare(password, this.password);
 };
 

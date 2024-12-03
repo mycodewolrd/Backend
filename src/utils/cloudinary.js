@@ -47,4 +47,4 @@ const deleteFormCloudinary = async (PublicId) => {
   }
 };
 
-export { uploadOnCloudinary };
+export { uploadOnCloudinary, deleteFormCloudinary };

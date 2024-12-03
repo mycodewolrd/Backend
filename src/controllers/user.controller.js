@@ -67,30 +67,10 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (existedUser) {
-    throw new ApiError(409, "User already exists, please create a new one ...");
+    throw new ApiError(409, "User already exists, please create a new one");
   }
   //console.log(req.files);
 
-  // check for images, check for avatar
-  // const avatarLocalPath = req.files?.avatar[0]?.path
-  // const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
-  // let coverImageLocalPath;
-  // if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-  //     coverImageLocalPath = req.files.coverImage[0].path
-  // }
-
-  // if (!avatarLocalPath) {
-  //     throw new ApiError(400, "Avatar file is required")
-  // }
-
-  // upload them to cloudinary, avatar
-  // const avatar = await uploadOnCloudinary(avatarLocalPath);
-  // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-
-  // if (!avatar) {
-  //     throw new ApiError(400, "Avatar file is required yet not uploaded!!")
-  // }
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
   const coverLocalPath = req.files?.coverImage?.[0]?.path;
   let avatar;
@@ -126,6 +106,7 @@ const registerUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
 
+
     if (!createdUser) {
       throw new ApiError(
         500,
@@ -139,16 +120,16 @@ const registerUser = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, createdUser, "User registered Successfully"));
   } catch (error) {
     console.log("User creation failed", error);
-    // if (avatar) {
-    //     await deleteFromCloudinary(avatar.public_id)
-    // }
-    // if (coverImage) {
-    //   await deleteFormCloudinary(coverImage.public_id);
-    // }
-    // throw new ApiError(
-    //   500,
-    //   "Something went wrong when creating user and Images were Deleted"
-    // );
+    if (avatar) {
+      await deleteFromCloudinary(avatar.public_id);
+    }
+    if (coverImage) {
+      await deleteFormCloudinary(coverImage.public_id);
+    }
+    throw new ApiError(
+      500,
+      "Something went wrong when creating user and Images were Deleted"
+    );
   }
 });
 
@@ -163,8 +144,9 @@ const registerUser = asyncHandler(async (req, res) => {
 // LogIn User method........
 const loginUser = asyncHandler(async (req, res) => {
   // 1) taking DATA from req body
-  const { email, userName /*, password*/ } = req.body;
-  console.log(email);
+  const { email, userName, password } = req.body;
+  console.log("Entered Email:", email);
+  console.log("Entered Password:", password);
 
   // 2) userName & email base LogIn access
   if (!userName && !email) {
@@ -186,13 +168,14 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
-  console.log("user exist");
+  console.log("User found:", user);
 
   // 4) password check
   const isPasswordValid = await user.isPasswordCorrect(password);
+  console.log("Is password valid:", isPasswordValid);
 
   if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid password");
+    throw new ApiError(401, "Invalid Password");
   }
 
   // 5) access and refresh token
@@ -243,11 +226,17 @@ const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
+
+  await generateAccessAndRefreshTokens(user._id)
   return res
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out"));
+    .json(
+      new ApiResponse(
+        200, 
+        {accessToken, newRefreshToken}, 
+        "User logged out"));
 });
 
 export { registerUser, loginUser, logoutUser };
