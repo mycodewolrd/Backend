@@ -29,7 +29,8 @@ const videoSchema = new mongoose.Schema(
         isPublished: {
             type: Boolean,
             default: true
-        },owner: {
+        },
+        owner: {
             type: Schema.Types.ObjectId,
             ref: "User"
         }
